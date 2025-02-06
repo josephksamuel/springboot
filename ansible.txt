@@ -1,0 +1,31 @@
+Description: AWS Credentials for Ansible
+Kind: Cloud
+Input Configuration (JSON):
+
+{
+  "fields": [
+    {
+      "id": "aws_access_key",
+      "label": "AWS Access Key",
+      "type": "string"
+    },
+    {
+      "id": "aws_secret_key",
+      "label": "AWS Secret Key",
+      "type": "string",
+      "secret": true
+    }
+  ],
+  "required": ["aws_access_key", "aws_secret_key"]
+}
+
+Injector Configuration (JSON):
+
+    {
+      "extra_vars": {
+        "aws_access_key": "{{ aws_access_key }}",
+        "aws_secret_key": "{{ aws_secret_key }}"
+      }
+    }
+
+Click Save.
