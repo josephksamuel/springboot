@@ -1,0 +1,89 @@
+To create an **AWS API Gateway** using **CloudFormation** via **AWX**, follow these steps:  
+
+### **1. Prepare the CloudFormation Template**
+Create a `api_gateway.yaml` file defining the API Gateway.
+
+```yaml
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  MyApiGateway:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: "MyAWXAPI"
+      Description: "API Gateway created via AWX and CloudFormation"
+  
+  MyResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref MyApiGateway
+      ParentId: !GetAtt MyApiGateway.RootResourceId
+      PathPart: "myresource"
+
+  MyMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref MyApiGateway
+      ResourceId: !Ref MyResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: MOCK
+
+  MyDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref MyApiGateway
+      StageName: "dev"
+```
+
+---
+
+### **2. Create an Ansible Playbook to Deploy CloudFormation**
+Save this as `deploy_api_gateway.yml`:
+
+```yaml
+- name: Deploy API Gateway using CloudFormation
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Deploy CloudFormation stack
+      amazon.aws.cloudformation:
+        stack_name: "awx-api-gateway-stack"
+        state: present
+        region: "us-east-1"
+        template: "{{ lookup('file', 'api_gateway.yaml') }}"
+```
+
+---
+
+### **3. Configure AWX**
+#### **A. Upload Files to AWX**
+- Navigate to **Projects** in AWX and sync your repository containing `api_gateway.yaml` and `deploy_api_gateway.yml`.
+
+#### **B. Add AWS Credentials**
+1. Go to **Credentials** → **Add**.
+2. Select **Amazon Web Services**.
+3. Enter your **Access Key** and **Secret Key**.
+
+#### **C. Create a Job Template**
+1. Go to **Templates** → **Add Job Template**.
+2. Select:
+   - **Inventory**: localhost (or your default)
+   - **Project**: The project with your playbook
+   - **Playbook**: `deploy_api_gateway.yml`
+   - **Credentials**: Your AWS credentials
+3. Save and **Launch** the job.
+
+---
+
+### **4. Verify Deployment**
+- In AWS Console, go to **API Gateway**.
+- Check that "MyAWXAPI" has been created.
+
+---
+
+### **Next Steps**
+- Extend with **Lambda integrations** or **IAM authentication**.
+- Automate API updates in **CI/CD pipelines**.
+
+Do you need additional features, like linking it to a **Lambda function**? 🚀
