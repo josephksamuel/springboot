@@ -1,0 +1,42 @@
+ package com.jks.pensions.error.enums;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.tcs.commons.error.enums.ErrorBase;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
+@JsonDeserialize(as=ErrorCodes.class)
+public enum ErrorCodes implements ErrorBase{
+
+	ERR001("Client match not found",""),
+	ERR002("Multiple Client match found",""),
+	ERR003("kEEY ","NotBlank.accKey"),
+	ERR004("Client match not found in Staging database",""),
+	ERR005("Not found in Staging","");
+	
+	
+	private String message;
+	private String validationKey;
+	
+	
+	private static Map<String, ErrorCodes> messageKeyErrorCodeMap=
+			Arrays.stream(values()).filter(errorCode ->StringUtils.isNotBlank(errorCode.validationKey))
+			.collect(Collectors.toMap(ErrorCodes::getValidationKey, Function.identity()));
+
+	
+	public static  ErrorCodes findByValidationKey(String validationKey) {
+		// TODO Auto-generated method stub
+		return messageKeyErrorCodeMap.get(validationKey);
+	}
+
+}
