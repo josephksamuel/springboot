@@ -1,0 +1,6 @@
+package com.tcs.commons.context;
+
+public enum CommonContextKeys implements ContextKey {
+	SOURCE_SYSTEM_ID,
+	CHANNEL;
+}
