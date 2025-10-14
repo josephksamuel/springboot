@@ -1,3 +1,6 @@
+public interface ContextKey {
+
+}
 
 public enum CommonContextKeys implements ContextKey {
 	SOURCE_SYSTEM_ID,
