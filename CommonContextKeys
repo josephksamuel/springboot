@@ -6,3 +6,29 @@ public enum CommonContextKeys implements ContextKey {
 	SOURCE_SYSTEM_ID,
 	CHANNEL;
 }
+import java.util.HashMap;
+import java.util.Map;
+
+public class MapBasedContext implements Context {
+
+	private final Map<ContextKey, Object> contextMap;
+
+	public MapBasedContext() {
+		this.contextMap = new HashMap<ContextKey, Object>();
+	}
+
+	public static MapBasedContext buildMapBasedContext() {
+		return new MapBasedContext();
+	}
+
+	@Override
+	public <T> void put(ContextKey key, T value) {
+		contextMap.put(key, value);
+	}
+
+	@Override
+	public <T> T get(ContextKey key, Class<T> targetClass) {
+		return targetClass.cast(contextMap.get(key));
+	}
+
+}
